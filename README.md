@@ -1,2 +1,3 @@
 # BellandeOS
- Bellande Operating System Programming Language
+
+## Bellande Operating System Scripting Programming Language written in Rust
