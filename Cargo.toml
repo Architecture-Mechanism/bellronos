@@ -1,0 +1,64 @@
+[package]
+name = "bellronos"
+version = "0.0.1"
+edition = "2021"
+authors = ["Ronaldson Bellande <ronaldsonbellande@gmail.com>"]
+description = "Bellande Operating System Programming Language written in Rust"
+license = "GPL-3.0-or-later"
+repository = "https://github.com/Architecture-Mechanism/bellronos"
+documentation = "https://bellande-architecture-mechanism-research-innovation-center.org/bellronos/docs"
+readme = "README.md"
+keywords = ["programming-language", "operating-system", "bellronos"]
+categories = ["compilers", "development-tools"]
+
+[lib]
+name = "bellronos"
+path = "src/bellronos.rs"
+
+[dependencies]
+glob = "0.3.1"
+tempfile = "3.3.0"
+shellexpand = "3.1.0"
+meval = "0.2.0"
+reqwest = { version = "0.11", features = ["json", "blocking"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+anyhow = "1.0"
+clap = { version = "4.0", features = ["derive"] }
+regex = "1.7"
+lazy_static = "1.4"
+log = "0.4"
+env_logger = "0.10"
+tokio = { version = "1.0", features = ["full"] }
+async-trait = "0.1"
+futures = "0.3"
+chrono = "0.4"
+rand = "0.8"
+
+[dev-dependencies]
+assert_cmd = "2.0"
+predicates = "3.0"
+criterion = "0.4"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+opt-level = 3
+debug = false
+debug-assertions = false
+overflow-checks = false
+incremental = false
+
+[features]
+default = ["std"]
+std = []
+nightly = ["compiler_builtins", "core", "alloc"]
+compiler_builtins = []
+core = []
+alloc = []
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

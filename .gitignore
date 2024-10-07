@@ -1,0 +1,4 @@
+publish.sh
+Cargo.lock
+target
+scripts
