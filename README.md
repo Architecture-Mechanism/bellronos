@@ -1,6 +1,6 @@
-# BellandeOS
+# bellronos
 
-## Bellande Operating System Scripting Programming Language written in Rust
+## Bellande Operating System Programming Language written in Rust
 
 
 
