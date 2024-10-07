@@ -1,7 +1,7 @@
 # bellronos
 
 ## Bellande Operating System Programming Language written in Rust
-  - Can be used in any Operating System but Bellande Operating System can only use Bellronos programming language
+  - Can be used in any Operating System but Bellande Operating System works optimally when you use Bellronos Programming Language
 
 
 
