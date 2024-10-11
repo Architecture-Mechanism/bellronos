@@ -13,7 +13,6 @@
 
 ```
 Name: bellronos
-Version: 0.0.1
 Summary: Bellande Operating System Scripting Language
 Home-page: github.com/Architecture-Mechanism/bellronos
 Author: Ronaldson Bellande

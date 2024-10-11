@@ -15,16 +15,16 @@
 
 use crate::error::error::BellronosError;
 use reqwest;
-use serde::{Deserialize, Serialize};
+use serde_json;
 use std::fs::{self, File};
 use std::io::{Error as IoError, Write};
 use std::path::PathBuf;
+use tokio::runtime::Handle;
 
 const PACKAGE_REGISTRY_URL: &str =
     "https://bellande-architecture-mechanism-research-innovation-center.org/bellronos/packages";
 const GITHUB_REPO_URL: &str = "https://github.com/Architecture-Mechanism/bellronos_package_manager";
 
-#[derive(Serialize, Deserialize)]
 struct PackageMetadata {
     name: String,
     version: String,
@@ -33,30 +33,27 @@ struct PackageMetadata {
 
 pub struct PackageManager {
     package_dir: PathBuf,
+    handle: Handle,
 }
 
 impl PackageManager {
     pub fn new(package_dir: String) -> Self {
         PackageManager {
             package_dir: PathBuf::from(package_dir),
+            handle: Handle::current(),
         }
     }
 
     pub fn install_package(&self, package_name: &str) -> Result<(), BellronosError> {
         println!("Installing package: {}", package_name);
 
-        // Fetch package metadata
         let metadata = self.fetch_package_metadata(package_name)?;
-
-        // Download package
         let package_content = self.download_package(&metadata)?;
 
-        // Install dependencies
         for dependency in &metadata.dependencies {
             self.install_package(dependency)?;
         }
 
-        // Write package content
         let package_path = self
             .package_dir
             .join(&metadata.name)
@@ -130,8 +127,10 @@ impl PackageManager {
         package_name: &str,
     ) -> Result<PackageMetadata, BellronosError> {
         let url = format!("{}/{}/metadata.json", PACKAGE_REGISTRY_URL, package_name);
-        let response = reqwest::blocking::get(&url).map_err(|e| {
-            BellronosError::Network(format!("Failed to fetch package metadata: {}", e))
+        let response = self.handle.block_on(async {
+            reqwest::get(&url).await.map_err(|e| {
+                BellronosError::Network(format!("Failed to fetch package metadata: {}", e))
+            })
         })?;
 
         if !response.status().is_success() {
@@ -141,9 +140,28 @@ impl PackageManager {
             )));
         }
 
-        response
-            .json::<PackageMetadata>()
-            .map_err(|e| BellronosError::Parser(format!("Failed to parse package metadata: {}", e)))
+        let text = self.handle.block_on(async {
+            response.text().await.map_err(|e| {
+                BellronosError::Network(format!("Failed to read package metadata: {}", e))
+            })
+        })?;
+
+        let json: serde_json::Value = serde_json::from_str(&text).map_err(|e| {
+            BellronosError::Parser(format!("Failed to parse package metadata: {}", e))
+        })?;
+
+        Ok(PackageMetadata {
+            name: json["name"].as_str().unwrap_or("").to_string(),
+            version: json["version"].as_str().unwrap_or("").to_string(),
+            dependencies: json["dependencies"]
+                .as_array()
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                        .collect()
+                })
+                .unwrap_or_default(),
+        })
     }
 
     fn download_package(&self, metadata: &PackageMetadata) -> Result<String, BellronosError> {
@@ -151,8 +169,11 @@ impl PackageManager {
             "{}/{}/{}.bellronos",
             PACKAGE_REGISTRY_URL, metadata.name, metadata.version
         );
-        let response = reqwest::blocking::get(&url)
-            .map_err(|e| BellronosError::Network(format!("Failed to download package: {}", e)))?;
+        let response = self.handle.block_on(async {
+            reqwest::get(&url)
+                .await
+                .map_err(|e| BellronosError::Network(format!("Failed to download package: {}", e)))
+        })?;
 
         if !response.status().is_success() {
             return Err(BellronosError::Network(format!(
@@ -161,9 +182,11 @@ impl PackageManager {
             )));
         }
 
-        response
-            .text()
-            .map_err(|e| BellronosError::Network(format!("Failed to read package content: {}", e)))
+        self.handle.block_on(async {
+            response.text().await.map_err(|e| {
+                BellronosError::Network(format!("Failed to read package content: {}", e))
+            })
+        })
     }
 
     pub fn update_package(&self, package_name: &str) -> Result<(), BellronosError> {
@@ -175,17 +198,14 @@ impl PackageManager {
             )));
         }
 
-        // Fetch latest metadata
         let metadata = self.fetch_package_metadata(package_name)?;
-
-        // Check if update is needed
         let current_version = self.get_installed_package_version(package_name)?;
+
         if current_version == metadata.version {
             println!("Package {} is already up to date", package_name);
             return Ok(());
         }
 
-        // Perform update
         self.install_package(package_name)
     }
 
@@ -205,7 +225,6 @@ impl PackageManager {
             ))
         })?;
 
-        // Extract version from package content
         content
             .lines()
             .find(|line| line.starts_with("# Version:"))
@@ -216,8 +235,11 @@ impl PackageManager {
 
     pub fn search_packages(&self, query: &str) -> Result<Vec<String>, BellronosError> {
         let url = format!("{}/search?q={}", PACKAGE_REGISTRY_URL, query);
-        let response = reqwest::blocking::get(&url)
-            .map_err(|e| BellronosError::Network(format!("Failed to search packages: {}", e)))?;
+        let response = self.handle.block_on(async {
+            reqwest::get(&url)
+                .await
+                .map_err(|e| BellronosError::Network(format!("Failed to search packages: {}", e)))
+        })?;
 
         if !response.status().is_success() {
             return Err(BellronosError::Network(format!(
@@ -226,15 +248,23 @@ impl PackageManager {
             )));
         }
 
-        response
-            .json::<Vec<String>>()
+        let text = self.handle.block_on(async {
+            response.text().await.map_err(|e| {
+                BellronosError::Network(format!("Failed to read search results: {}", e))
+            })
+        })?;
+
+        serde_json::from_str(&text)
             .map_err(|e| BellronosError::Parser(format!("Failed to parse search results: {}", e)))
     }
 
     pub fn get_package_info(&self, package_name: &str) -> Result<String, BellronosError> {
         let url = format!("{}/{}/README.md", GITHUB_REPO_URL, package_name);
-        let response = reqwest::blocking::get(&url)
-            .map_err(|e| BellronosError::Network(format!("Failed to fetch package info: {}", e)))?;
+        let response = self.handle.block_on(async {
+            reqwest::get(&url).await.map_err(|e| {
+                BellronosError::Network(format!("Failed to fetch package info: {}", e))
+            })
+        })?;
 
         if !response.status().is_success() {
             return Err(BellronosError::Network(format!(
@@ -243,8 +273,11 @@ impl PackageManager {
             )));
         }
 
-        response
-            .text()
-            .map_err(|e| BellronosError::Network(format!("Failed to read package info: {}", e)))
+        self.handle.block_on(async {
+            response
+                .text()
+                .await
+                .map_err(|e| BellronosError::Network(format!("Failed to read package info: {}", e)))
+        })
     }
 }
