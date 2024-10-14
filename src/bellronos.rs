@@ -29,6 +29,9 @@ use package_manager::package_manager::PackageManager;
 use std::env;
 use std::fs;
 
+#[global_allocator]
+static GLOBAL: std::alloc::System = std::alloc::System;
+
 fn main() -> Result<(), BellronosError> {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
