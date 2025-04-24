@@ -1,0 +1,56 @@
+# functions.bellronos
+import io
+import math
+import string
+
+# Function with return value
+define calculate_area(radius: float) -> float:
+    return math.pi * radius * radius
+
+# Function with default parameter
+define greet(name: string, greeting: string = "Hello") -> string:
+    return greeting + ", " + name + "!"
+
+# Function with multiple parameters and return value
+define calculate_rectangle_area(length: float, width: float) -> float:
+    return length * width
+
+# Void function (no return value)
+define print_separator() -> none:
+    io.print("----------------------")
+
+# Function with variable number of arguments
+define sum_all(numbers: list) -> float:
+    set total to 0
+    for num in numbers:
+        set total to total + num
+    return total
+
+define main() -> none:
+    # Basic function calls
+    set radius to 5.0
+    set circle_area to calculate_area(radius)
+    io.print("Circle area: " + string.to_string(circle_area))
+    
+    set message to greet("Bellronos")
+    io.print(message)
+    
+    set custom_message to greet("Bellronos", "Good morning")
+    io.print(custom_message)
+    
+    print_separator()
+    
+    # Rectangle area
+    set length to 10.0
+    set width to 5.0
+    set rect_area to calculate_rectangle_area(length, width)
+    io.print("Rectangle area: " + string.to_string(rect_area))
+    
+    print_separator()
+    
+    # Variable arguments
+    set numbers to [1, 2, 3, 4, 5]
+    set total to sum_all(numbers)
+    io.print("Sum of numbers: " + string.to_string(total))
+
+main()

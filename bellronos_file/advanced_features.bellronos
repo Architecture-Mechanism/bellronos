@@ -1,0 +1,116 @@
+# advanced_features.bellronos
+import math
+import io
+import string
+
+# Closures and higher-order functions
+define create_multiplier(factor: float) -> function:
+    define multiplier(x: float) -> float:
+        return x * factor
+    return multiplier
+
+# Generator function
+define fibonacci(n: int) -> generator:
+    set a to 0
+    set b to 1
+    for _ in range(n):
+        yield a
+        set (a, b) to (b, a + b)
+
+# Decorator pattern
+define timing_decorator(func: function) -> function:
+    define wrapper(*args, **kwargs) -> any:
+        set start_time to get_current_time()
+        set result to func(*args, **kwargs)
+        set end_time to get_current_time()
+        io.print("Function took " + string.to_string(end_time - start_time) + " ms to execute")
+        return result
+    return wrapper
+
+# Function with decorator
+@timing_decorator
+define compute_factorial(n: int) -> int:
+    if n <= 1:
+        return 1
+    return n * compute_factorial(n - 1)
+
+# Simulated get_current_time function
+define get_current_time() -> float:
+    # In a real implementation, this would use system time
+    return 123.45
+
+# Async/await pattern
+async define fetch_data(url: string) -> string:
+    io.print("Fetching data from " + url + "...")
+    # In a real implementation, this would be a network call
+    # await delay(1000)  # Simulate network delay
+    return "Data from " + url
+
+async define process_data() -> none:
+    set data to await fetch_data("https://example.com/api")
+    io.print("Processing: " + data)
+    io.print("Data processing complete")
+
+# Metaprogramming example - creates a class dynamically
+define create_dynamic_class(class_name: string, attributes: dict) -> type:
+    set methods to {
+        "**init**": define(self) -> none:
+            for attr_name in attributes:
+                set self[attr_name] to attributes[attr_name]
+        ,
+        "describe": define(self) -> string:
+            set desc to class_name + " instance with attributes:\n"
+            for attr_name in attributes:
+                set desc to desc + "- " + attr_name + ": " + string.to_string(self[attr_name]) + "\n"
+            return desc
+    }
+    
+    return type(class_name, (), methods)
+
+define main() -> none:
+    io.print("=== Closures ===")
+    set double to create_multiplier(2)
+    set triple to create_multiplier(3)
+    
+    io.print("Double 5: " + string.to_string(double(5)))
+    io.print("Triple 5: " + string.to_string(triple(5)))
+    
+    io.print("\n=== Generators ===")
+    io.print("First 10 Fibonacci numbers:")
+    for num in fibonacci(10):
+        io.print(string.to_string(num))
+    
+    io.print("\n=== Decorators ===")
+    set result to compute_factorial(5)
+    io.print("5! = " + string.to_string(result))
+    
+    io.print("\n=== Async/Await ===")
+    # In a real environment, this would be executed asynchronously
+    process_data()
+    
+    io.print("\n=== Metaprogramming ===")
+    set ProductClass to create_dynamic_class("Product", {
+        "name": "Generic Product",
+        "price": 9.99,
+        "in_stock": true
+    })
+    
+    set product to ProductClass()
+    io.print(product.describe())
+    
+    io.print("\n=== Functional Programming ===")
+    set numbers to [1, 2, 3, 4, 5]
+    
+    # Map
+    set squared to map(define(x) -> int: return x * x, numbers)
+    io.print("Squared numbers: " + string.to_string(list(squared)))
+    
+    # Filter
+    set even to filter(define(x) -> bool: return x % 2 == 0, numbers)
+    io.print("Even numbers: " + string.to_string(list(even)))
+    
+    # Reduce
+    set sum to reduce(define(acc, x) -> int: return acc + x, numbers, 0)
+    io.print("Sum: " + string.to_string(sum))
+
+main()

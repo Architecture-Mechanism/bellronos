@@ -1,0 +1,33 @@
+# variables_operators.bellronos
+import io
+import string
+
+define main() -> none:
+    # Variable declarations
+    set name to "Bellronos"
+    set age to 25
+    set pi to 3.14159
+    set is_awesome to true
+    
+    # Basic operations
+    set sum to 10 + 5
+    set difference to 20 - 8
+    set product to 4 * 7
+    set quotient to 100 / 4
+    set remainder to 15 % 4
+    
+    # String concatenation
+    set greeting to "Hello, " + name + "!"
+    
+    # Output
+    io.print(greeting)
+    io.print("Age: " + string.to_string(age))
+    io.print("Pi: " + string.to_string(pi))
+    io.print("Is awesome? " + string.to_string(is_awesome))
+    io.print("Sum: " + string.to_string(sum))
+    io.print("Difference: " + string.to_string(difference))
+    io.print("Product: " + string.to_string(product))
+    io.print("Quotient: " + string.to_string(quotient))
+    io.print("Remainder: " + string.to_string(remainder))
+
+main()

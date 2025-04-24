@@ -1,0 +1,77 @@
+# classes.bellronos
+import io
+import string
+
+# Basic class definition
+class Person:
+    define **init**(self, name: string, age: int) -> none:
+        self.name = name
+        self.age = age
+    
+    define introduce(self) -> none:
+        io.print("My name is " + self.name + " and I'm " + string.to_string(self.age) + " years old.")
+    
+    define celebrate_birthday(self) -> none:
+        self.age = self.age + 1
+        io.print(self.name + " is now " + string.to_string(self.age) + " years old!")
+
+# Inheritance
+class Student(Person):
+    define **init**(self, name: string, age: int, student_id: string) -> none:
+        # Call parent constructor
+        super.**init**(name, age)
+        self.student_id = student_id
+    
+    define introduce(self) -> none:
+        super.introduce()
+        io.print("I am a student with ID: " + self.student_id)
+
+# Another class with composition
+class Course:
+    define **init**(self, name: string, instructor: Person) -> none:
+        self.name = name
+        self.instructor = instructor
+        self.students = []
+    
+    define add_student(self, student: Student) -> none:
+        self.students.append(student)
+        io.print(student.name + " added to " + self.name + " course.")
+    
+    define list_students(self) -> none:
+        io.print("Students in " + self.name + " course:")
+        for student in self.students:
+            io.print("- " + student.name + " (ID: " + student.student_id + ")")
+
+define main() -> none:
+    # Create instances
+    set alice to Person("Alice", 30)
+    alice.introduce()
+    alice.celebrate_birthday()
+    
+    io.print("")
+    
+    # Create student (inherited class)
+    set bob to Student("Bob", 20, "S12345")
+    bob.introduce()  # Uses overridden method
+    
+    io.print("")
+    
+    # Create another student
+    set charlie to Student("Charlie", 22, "S67890")
+    
+    io.print("")
+    
+    # Composition example
+    set professor to Person("Dr. Smith", 45)
+    set math_course to Course("Advanced Mathematics", professor)
+    
+    # Add students to course
+    math_course.add_student(bob)
+    math_course.add_student(charlie)
+    
+    io.print("")
+    
+    # List all students in the course
+    math_course.list_students()
+
+main()

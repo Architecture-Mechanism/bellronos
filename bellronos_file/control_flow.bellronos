@@ -1,0 +1,47 @@
+# control_flow.bellronos
+import io
+import string
+
+define main() -> none:
+    # If-else statements
+    set temperature to 25
+    
+    if temperature > 30:
+        io.print("It's hot outside!")
+    elif temperature > 20:
+        io.print("It's a nice day!")
+    else:
+        io.print("It's a bit chilly!")
+    
+    # While loop
+    set counter to 0
+    io.print("Counting with while loop:")
+    while counter < 5:
+        io.print(string.to_string(counter))
+        set counter to counter + 1
+    
+    # For loop
+    io.print("Counting with for loop:")
+    for i in range(5):
+        io.print(string.to_string(i))
+    
+    # For loop with list
+    set fruits to ["apple", "banana", "cherry"]
+    io.print("Fruits:")
+    for fruit in fruits:
+        io.print(fruit)
+    
+    # Switch statement (using if-else as alternative)
+    set day to "Monday"
+    io.print("Today is " + day + ":")
+    
+    if day == "Monday":
+        io.print("Start of the work week")
+    elif day == "Friday":
+        io.print("End of the work week")
+    elif day == "Saturday" or day == "Sunday":
+        io.print("Weekend!")
+    else:
+        io.print("Midweek")
+
+main()

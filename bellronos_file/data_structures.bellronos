@@ -1,0 +1,84 @@
+# data_structures.bellronos
+import io
+import string
+
+define main() -> none:
+    # Lists
+    io.print("=== Lists ===")
+    set fruits to ["apple", "banana", "cherry", "orange"]
+    
+    # Accessing elements
+    io.print("First fruit: " + fruits[0])
+    io.print("Last fruit: " + fruits[3])
+    
+    # Modifying elements
+    set fruits[1] to "blueberry"
+    io.print("Modified list:")
+    for fruit in fruits:
+        io.print("- " + fruit)
+    
+    # List methods
+    fruits.append("mango")
+    io.print("After append:")
+    for fruit in fruits:
+        io.print("- " + fruit)
+    
+    fruits.remove("cherry")
+    io.print("After remove:")
+    for fruit in fruits:
+        io.print("- " + fruit)
+    
+    io.print("List length: " + string.to_string(len(fruits)))
+    
+    # Dictionaries
+    io.print("\n=== Dictionaries ===")
+    set person to {
+        "name": "John",
+        "age": 30,
+        "city": "New York"
+    }
+    
+    # Accessing values
+    io.print("Name: " + person["name"])
+    io.print("Age: " + string.to_string(person["age"]))
+    
+    # Modifying values
+    set person["age"] to 31
+    set person["job"] to "Developer"
+    
+    io.print("Modified dictionary:")
+    for key in person:
+        io.print("- " + key + ": " + string.to_string(person[key]))
+    
+    # Sets
+    io.print("\n=== Sets ===")
+    set unique_numbers to {1, 2, 3, 4, 5, 5, 4, 3}  # Duplicates are removed
+    
+    io.print("Set elements:")
+    for num in unique_numbers:
+        io.print("- " + string.to_string(num))
+    
+    # Set operations
+    set set_a to {1, 2, 3, 4, 5}
+    set set_b to {4, 5, 6, 7, 8}
+    
+    set union_set to set_a.union(set_b)
+    io.print("Union: " + string.to_string(union_set))
+    
+    set intersection_set to set_a.intersection(set_b)
+    io.print("Intersection: " + string.to_string(intersection_set))
+    
+    set difference_set to set_a.difference(set_b)
+    io.print("Difference (A-B): " + string.to_string(difference_set))
+    
+    # Tuples (immutable)
+    io.print("\n=== Tuples ===")
+    set coordinates to (10, 20)
+    io.print("X: " + string.to_string(coordinates[0]))
+    io.print("Y: " + string.to_string(coordinates[1]))
+    
+    # Tuple unpacking
+    set (x, y) to coordinates
+    io.print("Unpacked - X: " + string.to_string(x) + ", Y: " + string.to_string(y))
+
+main()

@@ -1,0 +1,98 @@
+# error_handling.bellronos
+import io
+import string
+
+# Function that might cause an error
+define divide(a: float, b: float) -> float:
+    if b == 0:
+        raise DivisionByZeroError("Cannot divide by zero")
+    return a / b
+
+# Function with custom error handling
+define safe_divide(a: float, b: float) -> float:
+    try:
+        return divide(a, b)
+    except DivisionByZeroError as error:
+        io.print("Error caught: " + string.to_string(error))
+        return 0
+    finally:
+        io.print("Division operation attempted")
+
+# Function to demonstrate file handling with errors
+define read_file(filename: string) -> string:
+    try:
+        set file to open(filename, "r")
+        set content to file.read()
+        file.close()
+        return content
+    except FileNotFoundError:
+        io.print("Error: File '" + filename + "' not found")
+        return ""
+    except IOError as error:
+        io.print("I/O error: " + string.to_string(error))
+        return ""
+
+# Custom error class
+class InvalidInputError(Exception):
+    define **init**(self, message: string) -> none:
+        super.**init__(message)
+
+# Function with custom error
+define validate_age(age: int) -> bool:
+    if age < 0:
+        raise InvalidInputError("Age cannot be negative")
+    elif age > 150:
+        raise InvalidInputError("Age is unrealistically high")
+    return true
+
+define main() -> none:
+    io.print("=== Basic Error Handling ===")
+    
+    # Handling division by zero
+    io.print("Attempting safe divisions:")
+    set result1 to safe_divide(10, 2)
+    io.print("10 / 2 = " + string.to_string(result1))
+    
+    set result2 to safe_divide(10, 0)
+    io.print("10 / 0 = " + string.to_string(result2))
+    
+    io.print("\n=== File Error Handling ===")
+    
+    # File not found error
+    set content to read_file("nonexistent_file.txt")
+    if content == "":
+        io.print("Failed to read file content")
+    else:
+        io.print("File content: " + content)
+    
+    io.print("\n=== Custom Error Handling ===")
+    
+    # Handling custom errors
+    try:
+        io.print("Validating age 25:")
+        validate_age(25)
+        io.print("Age is valid")
+        
+        io.print("\nValidating age -5:")
+        validate_age(-5)
+        io.print("This line won't be reached if error occurs")
+    except InvalidInputError as error:
+        io.print("Validation error: " + string.to_string(error))
+    
+    io.print("\n=== Nested Exception Handling ===")
+    
+    # Nested exception handling
+    try:
+        io.print("Outer try block")
+        try:
+            io.print("Inner try block")
+            set result to 10 / 0
+        except TypeError:
+            io.print("Type error caught in inner block")
+        io.print("This won't be reached if DivisionByZeroError occurs")
+    except DivisionByZeroError:
+        io.print("Division by zero caught in outer block")
+    
+    io.print("\nProgram completed")
+
+main()

@@ -1,0 +1,55 @@
+# language_handing.bellronos
+import math
+import io
+import string
+
+define main() -> none:
+    
+    # Language interoperability
+    # Executes C code
+    set c_code to "
+        #include <stdio.h>
+        int main() {
+            printf(\"Hello from C!\\n\");
+            return 0;
+        }
+    "
+    io.print(execute_c(c_code))
+    
+    # Executes Python Code
+    set python_code to "
+      print('Hello from Python!')
+    "
+    io.print(execute_python(python_code))
+    
+    # Executes JS code
+    set js_code to "
+      console.log('Hello from JavaScript!');
+    "
+    io.print(execute_javascript(js_code))
+    
+    # Executes Java Code
+    set java_code to "
+      public class Temp {
+        public static void main(String[] args) {
+          System.out.println(\"Hello from Java!\");
+        }
+      }
+    "
+    io.print(execute_java(java_code))
+    
+    # Executes Rust Code
+    set rust_code to "
+    fn main() {
+      println!(\"Hello from Rust!\");
+    }
+    "
+    io.print(execute_rust(rust_code))
+    
+    # Executes Swift Code
+    set swift_code to "
+      print(\"Hello from Swift!\")
+    "
+    io.print(execute_swift(swift_code))
+
+main()

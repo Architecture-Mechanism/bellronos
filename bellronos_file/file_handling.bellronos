@@ -1,0 +1,131 @@
+# file_handling.bellronos
+import io
+import string
+import file_system as fs
+
+define main() -> none:
+    # Writing to a file
+    io.print("=== Writing to a file ===")
+    set filename to "example.txt"
+    
+    # Open file for writing
+    try:
+        set file to fs.open(filename, "w")
+        file.write("Hello, Bellronos file system!\n")
+        file.write("This is the second line.\n")
+        file.write("This is the third line with a number: " + string.to_string(42) + "\n")
+        file.close()
+        io.print("Successfully wrote to " + filename)
+    except IOError as error:
+        io.print("Error writing to file: " + string.to_string(error))
+    
+    # Reading from a file
+    io.print("\n=== Reading from a file ===")
+    try:
+        set file to fs.open(filename, "r")
+        set content to file.read()
+        file.close()
+        io.print("File content:")
+        io.print(content)
+    except FileNotFoundError:
+        io.print("Error: File not found")
+    except IOError as error:
+        io.print("Error reading file: " + string.to_string(error))
+    
+    # Reading line by line
+    io.print("\n=== Reading line by line ===")
+    try:
+        set file to fs.open(filename, "r")
+        io.print("Line by line content:")
+        
+        set line_number to 1
+        for line in file:
+            io.print("Line " + string.to_string(line_number) + ": " + line.strip())
+            set line_number to line_number + 1
+        
+        file.close()
+    except IOError as error:
+        io.print("Error reading file: " + string.to_string(error))
+    
+    # Appending to a file
+    io.print("\n=== Appending to a file ===")
+    try:
+        set file to fs.open(filename, "a")
+        file.write("This line was appended.\n")
+        file.write("Another appended line.\n")
+        file.close()
+        io.print("Successfully appended to " + filename)
+    except IOError as error:
+        io.print("Error appending to file: " + string.to_string(error))
+    
+    # Reading the updated file
+    io.print("\n=== Reading updated file ===")
+    try:
+        set file to fs.open(filename, "r")
+        set content to file.read()
+        file.close()
+        io.print("Updated file content:")
+        io.print(content)
+    except IOError as error:
+        io.print("Error reading file: " + string.to_string(error))
+    
+    # Working with binary files
+    io.print("\n=== Working with binary files ===")
+    set binary_filename to "data.bin"
+    
+    # Write binary data
+    try:
+        set binary_file to fs.open(binary_filename, "wb")
+        # Example of writing some binary data (bytes from 0 to 9)
+        for i in range(10):
+            binary_file.write_byte(i)
+        binary_file.close()
+        io.print("Successfully wrote binary data to " + binary_filename)
+    except IOError as error:
+        io.print("Error writing binary file: " + string.to_string(error))
+    
+    # Read binary data
+    try:
+        set binary_file to fs.open(binary_filename, "rb")
+        set bytes_read to binary_file.read_bytes(10)  # Read 10 bytes
+        binary_file.close()
+        
+        io.print("Binary data read (as integers):")
+        for byte in bytes_read:
+            io.print(string.to_string(byte))
+    except IOError as error:
+        io.print("Error reading binary file: " + string.to_string(error))
+    
+    # File operations
+    io.print("\n=== File operations ===")
+    
+    # Check if file exists
+    if fs.file_exists(filename):
+        io.print(filename + " exists")
+    else:
+        io.print(filename + " does not exist")
+    
+    # Rename a file
+    set new_filename to "renamed_example.txt"
+    try:
+        fs.rename(filename, new_filename)
+        io.print("Renamed " + filename + " to " + new_filename)
+    except IOError as error:
+        io.print("Error renaming file: " + string.to_string(error))
+    
+    # Copy a file
+    set copy_filename to "copy_example.txt"
+    try:
+        fs.copy(new_filename, copy_filename)
+        io.print("Copied " + new_filename + " to " + copy_filename)
+    except IOError as error:
+        io.print("Error copying file: " + string.to_string(error))
+    
+    # Delete a file
+    try:
+        fs.delete(copy_filename)
+        io.print("Deleted " + copy_filename)
+    except IOError as error:
+        io.print("Error deleting file: " + string.to_string(error))
+
+main()
